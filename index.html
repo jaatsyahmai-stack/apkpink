@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GadgetStore Management System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffb6c1, #87cefa);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: #fff0f5;
+            padding: 25px;
+            border-radius: 25px;
+            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.3);
+            border: 3px solid #ff69b4;
+            box-sizing: border-box;
+        }
+        h1, h2 {
+            color: #d147a3;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 15px 0;
+            border: 2px solid #ffb6c1;
+            border-radius: 12px;
+            box-sizing: border-box;
+            background: #fff;
+            font-size: 14px;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: #ff69b4;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(255, 105, 180, 0.4);
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #ff1493;
+        }
+        .back-btn {
+            background: #87cefa;
+            color: #333;
+            margin-top: 5px;
+            box-shadow: 0 4px 10px rgba(135, 206, 250, 0.4);
+        }
+        .back-btn:hover {
+            background: #00bfff;
+        }
+        .section-box {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #ffb6c1;
+            margin-bottom: 15px;
+        }
+        
+        .shortcut-menu {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 10px 5px;
+            border-radius: 15px;
+            border: 2px solid #ffb6c1;
+            margin-bottom: 15px;
+        }
+        .shortcut-item {
+            text-align: center;
+            font-size: 11px;
+            color: #d147a3;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .shortcut-item div {
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
+
+        .catalog-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .product-card {
+            background: white;
+            border: 2px dashed #ff69b4;
+            padding: 12px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .product-card img {
+            width: 100%;
+            height: 120px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+        video {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 5px;
+            outline: none;
+        }
+        .cart-box {
+            background: #fff5ee;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #ffb6c1;
+            margin-top: 15px;
+        }
+
+        .status-tabs {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            white-space: nowrap;
+        }
+        .status-tab {
+            background: #fff;
+            border: 1px solid #ff69b4;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #d147a3;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .status-tab.active {
+            background: #ff69b4;
+            color: white;
+        }
+        .order-card {
+            background: white;
+            border: 1px solid #ffb6c1;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- 1. HALAMAN PILIH LOGIN -->
+    <div id="page-login-choice" class="page active">
+        <h1>GadgetStore Management System</h1>
+        <p style="text-align: center; color: #d147a3; font-weight: bold;">Silakan pilih akses masuk:</p>
+        <button onclick="goToPage('page-admin-login')">Login sebagai Admin</button>
+        <button class="back-btn" onclick="goToPage('page-customer-login')">Login sebagai Customer</button>
+    </div>
+
+    <!-- 2. HALAMAN LOGIN ADMIN -->
+    <div id="page-admin-login" class="page">
+        <h2>🔐 Login Admin</h2>
+        <label>Username:</label>
+        <input type="text" id="adminUser" placeholder="Masukkan admin">
+        <label>Password:</label>
+        <input type="password" id="adminPass" placeholder="Masukkan 123">
+        <button onclick="handleAdminLogin()">Masuk</button>
+        <button class="back-btn" onclick="goToPage('page-login-choice')">Kembali</button>
+    </div>
+
+    <!-- 3. HALAMAN DASHBOARD ADMIN -->
+    <div id="page-admin-dashboard" class="page">
+        <h2>📊 Panel Administrator</h2>
+        
+        <div class="section-box">
+            <h4 style="color: #d147a3; margin-top:0;">Laporan Toko</h4>
+            <p style="font-size:12px; color:#555; margin:0 0 5px 0;"><b>Harian:</b> 15 Transaksi (Rp 45.000.000)</p>
+            <p style="font-size:12px; color:#555; margin:0 0 5px 0;"><b>Bulanan:</b> 340 Transaksi (Rp 1.050.000.000)</p>
+            <p style="font-size:12px; color:#555; margin:0 0 10px 0;"><b>Tahunan:</b> 4.120 Transaksi (Rp 12.800.000.000)</p>
+        </div>
+
+        <div class="section-box">
+            <h4 style="color: #d147a3; margin-top:0;">Tambah Inventaris Produk Baru</h4>
+            <label style="font-size:13px;">Nama Produk:</label>
+            <input type="text" id="inputNama" placeholder="Contoh: Tablet Pro">
+            <label style="font-size:13px;">Deskripsi & Harga:</label>
+            <textarea id="inputDesc" rows="2" placeholder="Contoh: Layar 120Hz, RAM 8GB - Rp 8.000.000"></textarea>
+            <label style="font-size:13px;">URL Gambar Produk:</label>
+            <input type="text" id="inputImg" placeholder="https://...">
+            <button onclick="simpanProduk()">Simpan Produk ke Database</button>
+        </div>
+
+        <button class="back-btn" onclick="goToPage('page-login-choice')">Logout / Keluar</button>
+    </div>
+
+    <!-- 4. HALAMAN LOGIN CUSTOMER -->
+    <div id="page-customer-login" class="page">
+        <h2>🛍️ Login Customer</h2>
+        <label>Username:</label>
+        <input type="text" id="custUser" placeholder="Nama kamu">
+        <label>Password:</label>
+        <input type="password" id="custPass" placeholder="Password akun">
+        <label>Alamat Pengiriman:</label>
+        <input type="text" id="custAlamat" placeholder="Alamat lengkap rumahmu">
+        <button onclick="handleCustLogin()">Mulai Belanja</button>
+        <button class="back-btn" onclick="goToPage('page-login-choice')">Kembali</button>
+    </div>
+
+    <!-- 5. HALAMAN UTAMA PEMBELI -->
+    <div id="page-customer-shop" class="page">
+        <h2>🎀 Panel Pembeli (Katalog)</h2>
+        <p id="greeting-text" style="font-size: 12px; text-align: center; color: #d147a3; margin-top:0;"></p>
+
+        <div class="shortcut-menu">
+            <div class="shortcut-item" onclick="goToPage('page-order-status')">
+                <div>📦</div> Pesanan
+            </div>
+            <div class="shortcut-item" onclick="goToPage('page-order-status')">
+                <div>🎟️</div> Voucher
+            </div>
+            <div class="shortcut-item" onclick="goToPage('page-order-status')">
+                <div>🎁</div> Bonus
+            </div>
+            <div class="shortcut-item" onclick="goToPage('page-order-status')">
+                <div>💬</div> Pesan
+            </div>
+        </div>
+        
+        <div class="catalog-grid" id="catalog-container">
+            <div class="product-card">
+                <img src="[https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=500](https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=500)" alt="Smartphone">
+                <h4 style="margin: 5px 0; color: #d147a3;">Smartphone Premium</h4>
+                <p style="margin: 3px 0; font-weight: bold; color: #333;">Rp 12.000.000</p>
+                <p style="font-size: 11px; color: #666; margin: 2px 0;">Layar 120Hz, RAM 16GB, Snapdragon.</p>
+                <video controls>
+                    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                </video>
+                <button onclick="addToCart('Smartphone Premium', 12000000)" style="padding: 8px; font-size: 13px; margin-top:5px;">Tambah ke Keranjang 🛒</button>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500" alt="Laptop">
+                <h4 style="margin: 5px 0; color: #d147a3;">Laptop Ultra</h4>
+                <p style="margin: 3px 0; font-weight: bold; color: #333;">Rp 18.500.000</p>
+                <p style="font-size: 11px; color: #666; margin: 2px 0;">Layar 14 inch, RAM 32GB, SSD 1TB.</p>
+                <video controls>
+                    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                </video>
+                <button onclick="addToCart('Laptop Ultra', 18500000)" style="padding: 8px; font-size: 13px; margin-top:5px;">Tambah ke Keranjang 🛒</button>
+            </div>
+        </div>
+
+        <div class="cart-box">
+            <h4 style="margin: 0 0 5px 0; color: #d147a3; font-size: 14px;">Keranjang Belanjaan:</h4>
+            <p id="cart-summary" style="margin: 0 0 8px 0; font-size: 13px; font-weight: bold;">Belum ada item dipilih.</p>
+            
+            <label style="font-size: 12px; display: block; margin-bottom:2px;">Metode Pembayaran:</label>
+            <select id="payment-method">
+                <option value="Transfer Bank">Transfer Bank</option>
+                <option value="QRIS">QRIS</option>
+                <option value="COD">COD (Bayar di Tempat)</option>
+            </select>
+
+            <button onclick="checkout()" style="background: #ff69b4; margin-top: 5px; padding: 10px;">Check Out Sekarang ✨</button>
+        </div>
+
+        <button class="back-btn" onclick="goToPage('page-login-choice')" style="margin-top: 10px;">Keluar / Ganti Akun</button>
+    </div>
+
+    <!-- 6. HALAMAN STATUS PESANAN -->
+    <div id="page-order-status" class="page">
+        <h2>📦 Status & Histori Pesanan</h2>
+        
+        <div class="status-tabs">
+            <div class="status-tab active">Perlu dibayar</div>
+            <div class="status-tab">Untuk dikirim</div>
+            <div class="status-tab">Akan diterima</div>
+            <div class="status-tab">Untuk diulas</div>
+            <div class="status-tab">Pembatalan</div>
+            <div class="status-tab">Histori</div>
+        </div>
+
+        <div id="order-list-container">
+            <div class="order-card">
+                <p style="font-size: 12px; color: #8A2BE2; margin: 0 0 5px 0;"><b>GadgetStore Official</b> — Status Pesanan</p>
+                <hr style="border: 0; border-top: 1px solid #ffb6c1; margin: 5px 0;">
+                <p id="active-order-info" style="font-size: 12px; color: #555; margin: 5px 0;">Belum ada pesanan aktif. Silakan lakukan checkout dari keranjang belanja.</p>
+                <button onclick="goToPage('page-order-status')" style="padding: 6px; font-size: 12px; background: #87cefa; color: #333; margin-top: 5px;">Tulis Ulasan ✍️</button>
+            </div>
+        </div>
+
+        <button class="back-btn" onclick="goToPage('page-customer-shop')">Kembali ke Katalog</button>
+    </div>
+
+</div>
+
+<script>
+    let cartTotal = 0;
+    let cartItems = [];
+
+    function goToPage(pageId) {
+        let pages = document.querySelectorAll('.page');
+        pages.forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+    }
+
+    function handleAdminLogin() {
+        let u = document.getElementById('adminUser').value;
+        let p = document.getElementById('adminPass').value;
+        if (u === 'admin' && p === '123') {
+            goToPage('page-admin-dashboard');
+        } else {
+            alert('Username atau Password Admin salah (admin / 123)');
+        }
+    }
+
+    function handleCustLogin() {
+        let u = document.getElementById('custUser').value;
+        let p = document.getElementById('custPass').value;
+        let a = document.getElementById('custAlamat').value;
+        
+        if (u.trim() === '' || p.trim() === '' || a.trim() === '') {
+            alert('Harap isi Username, Password, dan Alamat lengkap dulu ya!');
+        } else {
+            document.getElementById('greeting-text').innerText = 'Halo, ' + u + ' | Alamat: ' + a;
+            goToPage('page-customer-shop');
+        }
+    }
+
+    function simpanProduk() {
+        let nama = document.getElementById('inputNama').value;
+        let desc = document.getElementById('inputDesc').value;
+        let img = document.getElementById('inputImg').value;
+
+        if(nama.trim() === '' || desc.trim() === '' || img.trim() === '') {
+            alert('Semua kolom pada form admin harus diisi!');
+            return;
+        }
+
+        let catalog = document.getElementById('catalog-container');
+        let newCard = document.createElement('div');
+        newCard.className = 'product-card';
+        newCard.innerHTML = `
+            <img src="${img}" alt="Produk">
+            <h4 style="margin: 5px 0; color: #d147a3;">${nama}</h4>
+            <p style="font-size: 11px; color: #666; margin: 2px 0;">${desc}</p>
+            <video controls>
+                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            </video>
+            <button onclick="addToCart('${nama}', 10000000)" style="padding: 8px; font-size: 13px; margin-top:5px;">Tambah ke Keranjang 🛒</button>
+        `;
+        catalog.prepend(newCard);
+        
+        document.getElementById('inputNama').value = '';
+        document.getElementById('inputDesc').value = '';
+        document.getElementById('inputImg').value = '';
+    }
+
+    function addToCart(namaProduk, harga) {
+        cartItems.push(namaProduk);
+        cartTotal += harga;
+        document.getElementById('cart-summary').innerText = cartItems.length + ' item | Total: Rp ' + cartTotal.toLocaleString('id-ID');
+    }
+
+    function checkout() {
+        if (cartTotal === 0) {
+            alert('Keranjang belanjaanmu masih kosong!');
+            return;
+        }
+        let payment = document.getElementById('payment-method').value;
+        
+        document.getElementById('active-order-info').innerHTML = 
+            '<b>Produk:</b> ' + cartItems.join(', ') + '<br>' +
+            '<b>Total Dibayar:</b> Rp ' + cartTotal.toLocaleString('id-ID') + '<br>' +
+            '<b>Metode Pembayaran:</b> ' + payment + '<br>' +
+            '<b>Status:</b> <span style="color: #d147a3; font-weight: bold;">Pesanan Diproses / Perlu dikirim</span>';
+
+        cartItems = [];
+        cartTotal = 0;
+        document.getElementById('cart-summary').innerText = 'Belum ada item dipilih.';
+        
+        goToPage('page-order-status');
+    }
+</script>
+        
+</body>
+</html>
